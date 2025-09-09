@@ -3,6 +3,7 @@ Settings module
 """
 
 import os
+from typing import List
 
 
 # General
@@ -28,6 +29,14 @@ REDIS_TTL = int(os.environ.get("REDIS_TTL", 3600))
 REDIS_URL: str = f"{REDIS_PROTOCOL}://{REDIS_USER}:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}"
 #print(REDIS_URL)
 
+# Cache Configuration
+CACHE_TYPE = os.environ.get("CACHE_TYPE", "redis")  # redis, memcache, memory
+CACHE_TTL = int(os.environ.get("CACHE_TTL", REDIS_TTL))
+
+# MemCache
+MEMCACHE_SERVERS = os.environ.get("MEMCACHE_SERVERS", "127.0.0.1:11211").split(",")
+MEMCACHE_TTL = int(os.environ.get("MEMCACHE_TTL", 3600))
+
 # Kafka
 KAFKA_SERVER = os.environ.get("KAFKA_SERVER", "")
 #print(KAFKA_SERVER)
@@ -47,6 +56,14 @@ class Settings:
     
     redis_url: str = REDIS_URL
     redis_ttl: int = REDIS_TTL
+    
+    # Cache settings
+    cache_type: str = CACHE_TYPE
+    cache_ttl: int = CACHE_TTL
+    
+    # MemCache settings
+    memcache_servers: List[str] = MEMCACHE_SERVERS
+    memcache_ttl: int = MEMCACHE_TTL
 
     kafka_server: str = KAFKA_SERVER
 

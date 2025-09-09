@@ -9,12 +9,12 @@ A Python package implementing hexagonal architecture pattern with multi-framewor
 - ✅ **Base Controllers**: Generic CRUD operations with filtering
 - ✅ **Repository Pattern**: Abstract data access layer
 - ✅ **Event System**: Domain event handling
-- ✅ **Caching Layer**: Pluggable caching adapters
+- ✅ **Multi-Cache Support**: Redis, MemCache, and In-Memory caching
 - ✅ **Type Safety**: Full type hints support
 
 ## Structure
 
-```
+```bash
 src/
 ├── adapters/           # External adapters (web, db, cache, etc.)
 │   ├── routers/       # Web framework routers
@@ -41,6 +41,12 @@ pip install flask pydantic
 
 # For Tornado
 pip install tornado pydantic
+
+# For Redis caching
+pip install redis
+
+# For MemCache caching
+pip install aiomcache
 ```
 
 ### 2. Create a Model
@@ -97,9 +103,37 @@ user_router = BaseRouter(
 )
 ```
 
+### 5. Set Up Caching
+
+```python
+from adapters.caches.user import UserCache
+
+# Redis (default)
+user_cache = UserCache()
+
+# MemCache
+user_cache = UserCache(
+    cache_type="memcache",
+    servers=["localhost:11211"]
+)
+
+# In-Memory (for testing)
+user_cache = UserCache(cache_type="memory")
+
+# Usage
+user = User(id="1", name="John", email="john@example.com", age=30)
+await user_cache.set("user:1", user)
+cached_user = await user_cache.get("user:1")
+```
+
 ## Examples
 
-See the `examples/` directory for complete working examples with each framework.
+See the `examples/` directory for complete working examples with each framework and caching system.
+
+- `fastapi_example.py` - FastAPI implementation
+- `flask_example.py` - Flask implementation  
+- `tornado_example.py` - Tornado implementation
+- `cache_example.py` - Comprehensive caching examples
 
 ## License
 

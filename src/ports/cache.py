@@ -23,4 +23,14 @@ class CachePort(Generic[T], ABC):
     @abstractmethod
     async def delete(self, key: str) -> None:
         """Delete item from cache"""
-        pass 
+        pass
+    
+    @abstractmethod
+    async def exists(self, key: str) -> bool:
+        """Check if key exists in cache"""
+        pass
+    
+    @abstractmethod
+    async def clear(self) -> None:
+        """Clear all cache entries"""
+        pass
