@@ -7,7 +7,7 @@ A Python package implementing hexagonal architecture pattern with multi-framewor
 - ✅ **Hexagonal Architecture**: Clean separation of concerns with ports and adapters
 - ✅ **Multi-Framework Support**: FastAPI, Flask, and Tornado support out of the box
 - ✅ **Base Controllers**: Generic CRUD operations with filtering
-- ✅ **Repository Pattern**: Abstract data access layer
+- ✅ **Multi-Database Support**: PostgreSQL, MariaDB, SQL Server, Oracle
 - ✅ **Multi-Messaging Support**: Kafka, RabbitMQ, AWS Kinesis, GCP Pub/Sub
 - ✅ **Multi-Cache Support**: Redis, MemCache, and In-Memory caching
 - ✅ **Type Safety**: Full type hints support
@@ -59,6 +59,18 @@ pip install aioboto3
 
 # For Google Cloud Pub/Sub
 pip install google-cloud-pubsub
+
+# For PostgreSQL (default)
+pip install asyncpg
+
+# For MariaDB/MySQL
+pip install aiomysql
+
+# For SQL Server
+pip install aioodbc
+
+# For Oracle
+pip install cx_oracle_async
 ```
 
 ### 2. Create a Model
@@ -83,7 +95,32 @@ class UserController(BaseController[User]):
     pass
 ```
 
-### 4. Create a Router
+### 4. Set Up Repository
+
+```python
+from adapters.repositories.user import UserRepository
+
+# PostgreSQL (default)
+user_repo = UserRepository()
+
+# MariaDB/MySQL
+user_repo = UserRepository(db_type="mariadb")
+
+# SQL Server
+user_repo = UserRepository(db_type="sqlserver")
+
+# Oracle
+user_repo = UserRepository(db_type="oracle")
+
+# Basic operations
+user = User(name="John", email="john@example.com")
+created_user = await user_repo.create(user)
+users = await user_repo.list()
+```
+
+📖 **For detailed repository documentation, configuration, and advanced usage, see: [`src/adapters/repositories/README.md`](src/adapters/repositories/README.md)**
+
+### 5. Create a Router
 
 ```python
 from adapters.routers.base import BaseRouter
@@ -115,7 +152,9 @@ user_router = BaseRouter(
 )
 ```
 
-### 5. Set Up Caching
+📖 **For detailed router documentation, patterns, and advanced usage, see: [`src/adapters/routers/README.md`](src/adapters/routers/README.md)**
+
+### 6. Set Up Caching
 
 ```python
 from adapters.caches.user import UserCache
@@ -138,7 +177,9 @@ await user_cache.set("user:1", user)
 cached_user = await user_cache.get("user:1")
 ```
 
-### 6. Set Up Events
+📖 **For detailed cache documentation, patterns, and advanced usage, see: [`src/adapters/caches/README.md`](src/adapters/caches/README.md)**
+
+### 7. Set Up Events
 
 ```python
 from adapters.events.user import UserEvent
@@ -158,42 +199,6 @@ async for user_data in user_events.pull("created"):
     print(f"User event: {user_data.name}")
 ```
 
-## Event System
-
-The package includes a flexible multi-backend event messaging system:
-
-### Supported Backends
-- **Apache Kafka**: High-throughput distributed streaming
-- **RabbitMQ**: Reliable message broker with advanced routing
-- **AWS Kinesis**: Real-time data streaming service
-- **Google Cloud Pub/Sub**: Global messaging and ingestion
-- **In-Memory**: Fast events for testing and development
-
-### Basic Usage
-
-```python
-from adapters.events.user import UserEvent
-
-# Kafka (default)
-user_events = UserEvent()
-
-# RabbitMQ
-user_events = UserEvent(event_type="rabbitmq")
-
-# AWS Kinesis
-user_events = UserEvent(
-    event_type="kinesis",
-    region_name="us-east-1"
-)
-
-# Publish events
-await user_events.push("created", user, key=user.id)
-
-# Subscribe to events
-async for user_data in user_events.pull("created"):
-    print(f"Processing: {user_data.name}")
-```
-
 📖 **For detailed event documentation, patterns, and advanced usage, see: [`src/adapters/events/README.md`](src/adapters/events/README.md)**
 
 ## Examples
@@ -203,6 +208,7 @@ See the `examples/` directory for complete working examples with each framework 
 - `fastapi_example.py` - FastAPI implementation
 - `flask_example.py` - Flask implementation  
 - `tornado_example.py` - Tornado implementation
+- `repositories_example.py` - Multi-database repository examples
 - `cache_example.py` - Comprehensive caching examples
 - `events_example.py` - Multi-backend event messaging examples
 
