@@ -4,7 +4,13 @@ Base Repository module with Multi-Database Support
 
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, List, Optional, Type, Any, Dict
-from fastapi import HTTPException
+# Custom exception to avoid FastAPI dependency
+class RepositoryException(Exception):
+    """Repository exception"""
+    def __init__(self, status_code: int, detail: str):
+        self.status_code = status_code
+        self.detail = detail
+        super().__init__(detail)
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, AsyncEngine
 from sqlalchemy import select, and_, MetaData
@@ -361,7 +367,7 @@ class BaseRepository(RepositoryPort[T], Generic[T]):
             item = result.scalar_one_or_none()
             
             if not item:
-                raise HTTPException(
+                raise RepositoryException(
                     status_code=404,
                     detail=f"{self.model.__name__} with pk: {pk} not found"
                 )
@@ -379,7 +385,7 @@ class BaseRepository(RepositoryPort[T], Generic[T]):
             item = result.scalar_one_or_none()
             
             if not item:
-                raise HTTPException(
+                raise RepositoryException(
                     status_code=404,
                     detail=f"{self.model.__name__} with pk: {pk} not found"
                 )
@@ -405,7 +411,7 @@ class BaseRepository(RepositoryPort[T], Generic[T]):
             item = result.scalar_one_or_none()
             
             if not item:
-                raise HTTPException(
+                raise RepositoryException(
                     status_code=404,
                     detail=f"{self.model.__name__} with pk: {pk} not found"
                 )

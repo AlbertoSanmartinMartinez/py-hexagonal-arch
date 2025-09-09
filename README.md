@@ -28,77 +28,81 @@ src/
 └── config/            # Configuration
 ```
 
-## Quick Start
+## Installation
 
-### 1. Install Dependencies
+### Quick Install
 
 ```bash
-# For FastAPI
-pip install fastapi uvicorn pydantic
+# Basic installation (includes PostgreSQL and FastAPI)
+pip install py-hexagonal-arch
 
-# For Flask
-pip install flask pydantic
+# Install with specific extras
+pip install py-hexagonal-arch[redis,kafka,flask]
 
-# For Tornado
-pip install tornado pydantic
-
-# For Redis caching
-pip install redis
-
-# For MemCache caching
-pip install aiomcache
-
-# For Kafka messaging
-pip install aiokafka
-
-# For RabbitMQ messaging
-pip install aio-pika
-
-# For AWS Kinesis
-pip install aioboto3
-
-# For Google Cloud Pub/Sub
-pip install google-cloud-pubsub
-
-# For PostgreSQL (default)
-pip install asyncpg
-
-# For MariaDB/MySQL
-pip install aiomysql
-
-# For SQL Server
-pip install aioodbc
-
-# For Oracle
-pip install cx_oracle_async
+# Install everything (all adapters)
+pip install py-hexagonal-arch[all]
 ```
 
-### 2. Create a Model
+### Available Extras
+
+```bash
+# Web frameworks
+pip install py-hexagonal-arch[flask]      # Flask support
+pip install py-hexagonal-arch[tornado]    # Tornado support
+
+# Databases  
+pip install py-hexagonal-arch[mysql]      # MariaDB/MySQL support
+pip install py-hexagonal-arch[sqlserver]  # SQL Server support
+pip install py-hexagonal-arch[oracle]     # Oracle support
+
+# Cache systems
+pip install py-hexagonal-arch[redis]      # Redis support
+pip install py-hexagonal-arch[memcache]   # MemCache support
+
+# Event messaging
+pip install py-hexagonal-arch[kafka]      # Kafka support
+pip install py-hexagonal-arch[rabbitmq]   # RabbitMQ support  
+pip install py-hexagonal-arch[kinesis]    # AWS Kinesis support
+pip install py-hexagonal-arch[pubsub]     # GCP Pub/Sub support
+
+# Development tools
+pip install py-hexagonal-arch[dev]        # Development dependencies
+pip install py-hexagonal-arch[docs]       # Documentation tools
+```
+
+## Quick Start
+
+### 1. Create a Model
 
 ```python
-from pydantic import BaseModel
+from py_hexagonal_arch import CustomModel
+from typing import Optional
 
-class User(BaseModel):
+class User(CustomModel):
     id: Optional[str] = None
     name: str
     email: str
     age: int
 ```
 
-### 3. Create a Controller
+### 2. Create a Controller
 
 ```python
-from controllers.base import BaseController
+from py_hexagonal_arch import BaseController
 
 class UserController(BaseController[User]):
     # Implement your business logic
     pass
 ```
 
-### 4. Set Up Repository
+### 3. Set Up Repository
 
 ```python
-from adapters.repositories.user import UserRepository
+from py_hexagonal_arch import BaseRepository
+
+class UserRepository(BaseRepository[User]):
+    def __init__(self):
+        super().__init__(model=User, schema=UserSchema)
 
 # PostgreSQL (default)
 user_repo = UserRepository()
@@ -120,10 +124,10 @@ users = await user_repo.list()
 
 📖 **For detailed repository documentation, configuration, and advanced usage, see: [`src/adapters/repositories/README.md`](src/adapters/repositories/README.md)**
 
-### 5. Create a Router
+### 4. Create a Router
 
 ```python
-from adapters.routers.base import BaseRouter
+from py_hexagonal_arch import BaseRouter
 
 # FastAPI (default)
 user_router = BaseRouter(
@@ -154,10 +158,14 @@ user_router = BaseRouter(
 
 📖 **For detailed router documentation, patterns, and advanced usage, see: [`src/adapters/routers/README.md`](src/adapters/routers/README.md)**
 
-### 6. Set Up Caching
+### 5. Set Up Caching
 
 ```python
-from adapters.caches.user import UserCache
+from py_hexagonal_arch import BaseCache
+
+class UserCache(BaseCache[User]):
+    def __init__(self):
+        super().__init__(model=User)
 
 # Redis (default)
 user_cache = UserCache()
@@ -179,10 +187,14 @@ cached_user = await user_cache.get("user:1")
 
 📖 **For detailed cache documentation, patterns, and advanced usage, see: [`src/adapters/caches/README.md`](src/adapters/caches/README.md)**
 
-### 7. Set Up Events
+### 6. Set Up Events
 
 ```python
-from adapters.events.user import UserEvent
+from py_hexagonal_arch import BaseEvent
+
+class UserEvent(BaseEvent[User]):
+    def __init__(self):
+        super().__init__(model=User)
 
 # Kafka (default)
 user_events = UserEvent()
