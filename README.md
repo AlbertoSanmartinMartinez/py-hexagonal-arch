@@ -8,7 +8,7 @@ A Python package implementing hexagonal architecture pattern with multi-framewor
 - ✅ **Multi-Framework Support**: FastAPI, Flask, and Tornado support out of the box
 - ✅ **Base Controllers**: Generic CRUD operations with filtering
 - ✅ **Repository Pattern**: Abstract data access layer
-- ✅ **Event System**: Domain event handling
+- ✅ **Multi-Messaging Support**: Kafka, RabbitMQ, AWS Kinesis, GCP Pub/Sub
 - ✅ **Multi-Cache Support**: Redis, MemCache, and In-Memory caching
 - ✅ **Type Safety**: Full type hints support
 
@@ -47,6 +47,18 @@ pip install redis
 
 # For MemCache caching
 pip install aiomcache
+
+# For Kafka messaging
+pip install aiokafka
+
+# For RabbitMQ messaging
+pip install aio-pika
+
+# For AWS Kinesis
+pip install aioboto3
+
+# For Google Cloud Pub/Sub
+pip install google-cloud-pubsub
 ```
 
 ### 2. Create a Model
@@ -126,6 +138,64 @@ await user_cache.set("user:1", user)
 cached_user = await user_cache.get("user:1")
 ```
 
+### 6. Set Up Events
+
+```python
+from adapters.events.user import UserEvent
+
+# Kafka (default)
+user_events = UserEvent()
+
+# RabbitMQ
+user_events = UserEvent(event_type="rabbitmq")
+
+# AWS Kinesis
+user_events = UserEvent(event_type="kinesis")
+
+# Basic operations
+await user_events.push("created", user, key=user.id)
+async for user_data in user_events.pull("created"):
+    print(f"User event: {user_data.name}")
+```
+
+## Event System
+
+The package includes a flexible multi-backend event messaging system:
+
+### Supported Backends
+- **Apache Kafka**: High-throughput distributed streaming
+- **RabbitMQ**: Reliable message broker with advanced routing
+- **AWS Kinesis**: Real-time data streaming service
+- **Google Cloud Pub/Sub**: Global messaging and ingestion
+- **In-Memory**: Fast events for testing and development
+
+### Basic Usage
+
+```python
+from adapters.events.user import UserEvent
+
+# Kafka (default)
+user_events = UserEvent()
+
+# RabbitMQ
+user_events = UserEvent(event_type="rabbitmq")
+
+# AWS Kinesis
+user_events = UserEvent(
+    event_type="kinesis",
+    region_name="us-east-1"
+)
+
+# Publish events
+await user_events.push("created", user, key=user.id)
+
+# Subscribe to events
+async for user_data in user_events.pull("created"):
+    print(f"Processing: {user_data.name}")
+```
+
+📖 **For detailed event documentation, patterns, and advanced usage, see: [`src/adapters/events/README.md`](src/adapters/events/README.md)**
+
 ## Examples
 
 See the `examples/` directory for complete working examples with each framework and caching system.
@@ -134,6 +204,7 @@ See the `examples/` directory for complete working examples with each framework 
 - `flask_example.py` - Flask implementation  
 - `tornado_example.py` - Tornado implementation
 - `cache_example.py` - Comprehensive caching examples
+- `events_example.py` - Multi-backend event messaging examples
 
 ## License
 

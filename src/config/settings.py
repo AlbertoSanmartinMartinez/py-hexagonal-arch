@@ -37,9 +37,24 @@ CACHE_TTL = int(os.environ.get("CACHE_TTL", REDIS_TTL))
 MEMCACHE_SERVERS = os.environ.get("MEMCACHE_SERVERS", "127.0.0.1:11211").split(",")
 MEMCACHE_TTL = int(os.environ.get("MEMCACHE_TTL", 3600))
 
+# Event Messaging Configuration
+EVENT_TYPE = os.environ.get("EVENT_TYPE", "kafka")  # kafka, rabbitmq, kinesis, pubsub, memory
+
 # Kafka
-KAFKA_SERVER = os.environ.get("KAFKA_SERVER", "")
+KAFKA_SERVER = os.environ.get("KAFKA_SERVER", "localhost:9092")
 #print(KAFKA_SERVER)
+
+# RabbitMQ
+RABBITMQ_URL = os.environ.get("RABBITMQ_URL", "amqp://localhost")
+
+# AWS Kinesis
+AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
+
+# Google Cloud Pub/Sub
+GCP_PROJECT_ID = os.environ.get("GCP_PROJECT_ID", "")
+GCP_CREDENTIALS_PATH = os.environ.get("GCP_CREDENTIALS_PATH", "")
 
 # OpenAI
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
@@ -65,7 +80,19 @@ class Settings:
     memcache_servers: List[str] = MEMCACHE_SERVERS
     memcache_ttl: int = MEMCACHE_TTL
 
+    # Event messaging settings
+    event_type: str = EVENT_TYPE
     kafka_server: str = KAFKA_SERVER
+    rabbitmq_url: str = RABBITMQ_URL
+    
+    # AWS settings
+    aws_region: str = AWS_REGION
+    aws_access_key_id: str = AWS_ACCESS_KEY_ID
+    aws_secret_access_key: str = AWS_SECRET_ACCESS_KEY
+    
+    # GCP settings
+    gcp_project_id: str = GCP_PROJECT_ID
+    gcp_credentials_path: str = GCP_CREDENTIALS_PATH
 
     openai_api_key: str = OPENAI_API_KEY
     claude_api_key: str = CLAUDE_API_KEY
