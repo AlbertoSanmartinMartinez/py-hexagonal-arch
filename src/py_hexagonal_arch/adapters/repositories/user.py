@@ -4,10 +4,10 @@ User Repository module
 
 from typing import Optional, Any
 
-from adapters.repositories.base import BaseRepository
-from models.user import User
-from schemas.user import UserSchema
-from config.settings import settings
+from .base import BaseRepository
+from ...models.user import User
+from ...schemas.user import UserSchema
+from ...config.settings import settings
 
 
 class UserRepository(BaseRepository[User]):

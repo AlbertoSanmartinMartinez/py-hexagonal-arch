@@ -6,8 +6,7 @@ from uuid import uuid4
 from sqlalchemy import Column, String, Table
 from sqlalchemy.orm import relationship
 
-from config.metadata import metadata
-from schemas.base import BaseSchema
+from .base import BaseSchema
 
 
 class UserSchema(BaseSchema):
@@ -16,7 +15,7 @@ class UserSchema(BaseSchema):
     __tablename__ = "user"
     __table__ = Table(
         __tablename__,
-        metadata,
+        BaseSchema.metadata,
         Column("uuid", String, primary_key=True, index=True, default=lambda: str(uuid4())),
         Column("first_name", String, nullable=True),
         Column("last_name", String, nullable=True),

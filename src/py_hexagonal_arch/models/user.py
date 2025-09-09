@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import Optional, List, TYPE_CHECKING
 
-from models.base import CustomModel
+from .base import CustomModel
 
 if TYPE_CHECKING:
     from models.chat import Chat

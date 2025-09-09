@@ -6,9 +6,9 @@ from typing import TypeVar, Generic, Optional, Any
 
 from pydantic import BaseModel
 
-from ports.repository import RepositoryPort, FilterList
-from ports.cache import CachePort
-from ports.event import EventPort
+from ..ports.repository import RepositoryPort, FilterList
+from ..ports.cache import CachePort
+from ..ports.event import EventPort
 
 T = TypeVar('T', bound=BaseModel)
 

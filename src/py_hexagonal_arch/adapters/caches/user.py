@@ -4,9 +4,9 @@ User Cache module
 
 from typing import TYPE_CHECKING, Optional, Any
 
-from adapters.caches.base import BaseCache
-from models.user import User
-from config.settings import settings
+from .base import BaseCache
+from ...models.user import User
+from ...config.settings import settings
 
 
 if TYPE_CHECKING:

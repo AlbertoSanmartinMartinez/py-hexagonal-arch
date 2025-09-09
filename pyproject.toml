@@ -125,7 +125,7 @@ all = [
 
 
 [tool.setuptools.dynamic]
-version = { attr = "__init__.__version__" }
+version = { attr = "py_hexagonal_arch.__version__" }
 
 [tool.setuptools.packages.find]
 where = ["src"]

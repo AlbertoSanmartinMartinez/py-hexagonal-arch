@@ -17,9 +17,9 @@ from sqlalchemy import select, and_, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import selectinload
 
-from ports.repository import RepositoryPort, FilterList, FilterCondition
-from config.settings import settings
-from models.base import CustomModel
+from ...ports.repository import RepositoryPort, FilterList, FilterCondition
+from ...config.settings import settings
+from ...models.base import CustomModel
 
 T = TypeVar('T', bound=CustomModel)
 

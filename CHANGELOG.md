@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2025-09-09
+
+### Fixed
+
+- **Package Import Issues**: Fixed critical import errors that prevented the package from being used after installation
+  - Restructured package directory from `src/` to `src/py_hexagonal_arch/` for proper Python package structure
+  - Fixed all relative imports throughout the codebase using proper dot notation (e.g., `from ..ports.repository import`)
+  - Corrected import statements in controllers, models, schemas, and all adapter modules
+  - Fixed metadata import issue in `schemas/user.py` by using `BaseSchema.metadata`
+  - Updated package configuration in `pyproject.toml` to use correct version attribute path
+  - Added missing `BaseSchema` import to main `__init__.py`
+
+### Changed
+
+- **Package Structure**: Moved all modules to proper `py_hexagonal_arch/` subdirectory structure
+- **Import System**: All internal imports now use relative imports for better package isolation
+
+### Technical Details
+
+- Fixed `ModuleNotFoundError: No module named 'py_hexagonal_arch'` error
+- Resolved `ModuleNotFoundError: No module named 'ports'` and similar import errors
+- Package now installs and imports correctly with all components accessible
+- All imports verified working: `from py_hexagonal_arch import BaseSchema, BaseController, CustomModel, etc.`
+
 ## [1.0.0] - 2025-09-09
 
 ### Added

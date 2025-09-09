@@ -8,9 +8,9 @@ from typing import Any, Callable, Dict, List, Optional, Type, TypeVar, Generic
 from enum import Enum
 from pydantic import BaseModel, create_model
 
-from ports.router import RouterPort
-from ports.repository import FilterCondition, FilterList
-from controllers.base import BaseController
+from ...ports.router import RouterPort
+from ...ports.repository import FilterCondition, FilterList
+from ...controllers.base import BaseController
 
 T = TypeVar('T', bound=BaseModel)
 

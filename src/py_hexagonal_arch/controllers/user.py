@@ -4,11 +4,11 @@ User Controller module
 
 from typing import TYPE_CHECKING
 
-from controllers.base import BaseController
+from .base import BaseController
 
-from adapters.repositories.user import UserRepository
-from adapters.caches.user import UserCache
-from adapters.events.user import UserEvent
+from ..adapters.repositories.user import UserRepository
+from ..adapters.caches.user import UserCache
+from ..adapters.events.user import UserEvent
 
 
 if TYPE_CHECKING:

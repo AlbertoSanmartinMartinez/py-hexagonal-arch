@@ -7,8 +7,8 @@ from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, Optional, Any, Type, Dict, List, Callable, AsyncGenerator
 from pydantic import BaseModel
 
-from ports.event import EventPort
-from config.settings import settings
+from ...ports.event import EventPort
+from ...config.settings import settings
 
 T = TypeVar('T', bound=BaseModel)
 

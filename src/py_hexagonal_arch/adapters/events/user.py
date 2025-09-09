@@ -4,8 +4,8 @@ User Event module
 
 from typing import TYPE_CHECKING, Optional, Any
 
-from adapters.events.base import BaseEvent
-from models.user import User
+from .base import BaseEvent
+from ...models.user import User
 
 
 if TYPE_CHECKING:

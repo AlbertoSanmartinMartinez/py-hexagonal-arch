@@ -6,8 +6,8 @@ from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, Optional, Type, Dict, List, Any
 from pydantic import BaseModel
 
-from ports.cache import CachePort
-from config.settings import settings
+from ...ports.cache import CachePort
+from ...config.settings import settings
 
 T = TypeVar('T', bound=BaseModel)
 
