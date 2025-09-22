@@ -575,7 +575,20 @@ class BaseRouter(RouterPort[T], Generic[T]):
 
     async def update(self, pk: str, item_update: Any) -> T:
         """Update endpoint handler"""
-        update_data = self.update_model(**item_update)
+        # Convert item_update to dict if it's a Pydantic model
+        if hasattr(item_update, 'model_dump'):
+            # Pydantic v2
+            update_data = self.update_model(**item_update.model_dump())
+        elif hasattr(item_update, 'dict'):
+            # Pydantic v1
+            update_data = self.update_model(**item_update.dict())
+        elif isinstance(item_update, dict):
+            # Already a dictionary
+            update_data = self.update_model(**item_update)
+        else:
+            # Fallback: try to convert to dict
+            update_data = self.update_model(**dict(item_update))
+        
         return await self.controller.update(pk, update_data)
 
     async def delete(self, pk: str) -> None:
