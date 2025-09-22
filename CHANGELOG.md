@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2025-09-22
+
+### Fixed
+
+- **FastAPI Data Injection**: Fixed critical `UnboundLocalError` in FastAPI router handlers
+  - Fixed `create_handler` function to properly accept model data as parameter for FastAPI dependency injection
+  - Fixed `update_handler` function to handle both path parameters and request body data correctly
+  - Added `request_model` field to `RouteDefinition` class to specify request body models for FastAPI
+  - Updated `FastAPIAdapter.add_route()` to create proper wrapper functions for POST/PUT/PATCH requests
+  - Fixed type annotations for handler function parameters (`Optional[T]` and `Optional[Dict[str, Any]]`)
+
+### Changed
+
+- **Router System**: Enhanced FastAPI integration with proper request body handling
+  - POST routes now properly accept model data through FastAPI's dependency injection
+  - PATCH routes now handle both path parameters (`pk`) and request body data
+  - Added support for `request_model` in route definitions to specify request body types
+
+### Technical Details
+
+- Fixed `UnboundLocalError: cannot access local variable 'item' where it is not associated with a value`
+- Resolved FastAPI route handler parameter mismatch issues
+- Updated `RouteDefinition` class to include `request_model` parameter
+- Enhanced `FastAPIAdapter` to create proper wrapper functions for different HTTP methods
+- Fixed type safety issues with optional parameters in handler functions
+
 ## [1.0.1] - 2025-09-09
 
 ### Fixed

@@ -37,6 +37,7 @@ class RouteDefinition:
         method: HTTPMethod,
         handler: Callable,
         response_model: Optional[Type] = None,
+        request_model: Optional[Type] = None,
         status_code: int = 200,
         summary: Optional[str] = None,
         description: Optional[str] = None
@@ -45,6 +46,7 @@ class RouteDefinition:
         self.method = method
         self.handler = handler
         self.response_model = response_model
+        self.request_model = request_model
         self.status_code = status_code
         self.summary = summary
         self.description = description
@@ -123,7 +125,21 @@ class FastAPIAdapter(WebFrameworkAdapter):
         if route.description:
             decorator_kwargs["description"] = route.description
         
-        method_map[route.method](**decorator_kwargs)(route.handler)
+        # For POST/PUT/PATCH requests, we need to create a wrapper that handles the request body
+        if route.method in [HTTPMethod.POST, HTTPMethod.PUT, HTTPMethod.PATCH] and route.request_model:
+            # Create a wrapper function that accepts the model as request body
+            if route.method == HTTPMethod.POST:
+                # POST requests only need the request body
+                async def wrapped_handler(item: route.request_model):
+                    return await route.handler(item)
+            else:
+                # PUT/PATCH requests need both path parameter and request body
+                async def wrapped_handler(pk: str, item: route.request_model):
+                    return await route.handler(pk, item)
+            
+            method_map[route.method](**decorator_kwargs)(wrapped_handler)
+        else:
+            method_map[route.method](**decorator_kwargs)(route.handler)
     
     def get_request_data(self, request: Any) -> Dict[str, Any]:
         """Extract request data from FastAPI request"""
@@ -456,16 +472,13 @@ class BaseRouter(RouterPort[T], Generic[T]):
         """Register all routes"""
 
         # Create route handler functions
-        async def create_handler() -> T:
+        async def create_handler(item: Optional[T] = None) -> T:
             # Get request data based on framework
             if hasattr(self.framework_adapter, 'request'):
                 # Flask
                 data = self.framework_adapter.get_request_data()
                 item = self.model(**data)
-            else:
-                # FastAPI - data injection handled by framework
-                # This will be overridden by the actual route decorator
-                pass
+            # For FastAPI, item is passed as parameter through dependency injection
             return await self.create(item)
 
         async def list_handler() -> List[T]:
@@ -483,16 +496,13 @@ class BaseRouter(RouterPort[T], Generic[T]):
         async def detail_handler(pk: str) -> T:
             return await self.detail(pk)
 
-        async def update_handler(pk: str) -> T:
+        async def update_handler(pk: str, data: Optional[Dict[str, Any]] = None) -> T:
             # Get request data based on framework
             if hasattr(self.framework_adapter, 'request'):
                 # Flask
                 data = self.framework_adapter.get_request_data()
-                return await self.update(pk, data)
-            else:
-                # FastAPI - handled by dependency injection
-                pass
-            return await self.update(pk, {})
+            # For FastAPI, data is passed as parameter through dependency injection
+            return await self.update(pk, data or {})
 
         async def delete_handler(pk: str) -> None:
             await self.delete(pk)
@@ -504,6 +514,7 @@ class BaseRouter(RouterPort[T], Generic[T]):
                 method=HTTPMethod.POST,
                 handler=create_handler,
                 response_model=self.model,
+                request_model=self.model,
                 status_code=201,
                 summary=f"Create {self.model.__name__}",
                 description=f"Create a new {self.model.__name__} instance"
@@ -531,6 +542,7 @@ class BaseRouter(RouterPort[T], Generic[T]):
                 method=HTTPMethod.PATCH,
                 handler=update_handler,
                 response_model=self.model,
+                request_model=self.update_model,
                 status_code=200,
                 summary=f"Update {self.model.__name__}",
                 description=f"Update a specific {self.model.__name__} by ID"
